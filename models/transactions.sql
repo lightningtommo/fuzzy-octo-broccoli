@@ -35,7 +35,8 @@ joined AS (
 lag_line_level AS (
   SELECT
     *,
-    LAG(line_item_price) OVER (PARTITION BY line_item_id ORDER BY order_version,line_item_version) AS line_item_price_delta,
+    line_item_price - IFNULL( LAG( line_item_price ) OVER ( PARTITION BY line_item_id ORDER BY order_version, line_item_version ), 0 ) AS line_item_price_delta,
+    GENERATE_UUID() AS line_item_pkey
   FROM
     joined
 ),
@@ -45,9 +46,10 @@ rolled_up AS (
     order_id,
     order_version,
     order_transaction_date,
-    SUM(line_item_price) AS order_price,
+    SUM( line_item_price ) AS order_price,
     ARRAY_AGG(
       STRUCT(
+	line_item_pkey,
         line_item_id,
         line_item_product_id,
         line_item_type,
@@ -66,8 +68,9 @@ rolled_up AS (
 
 lag_order_level AS (
   SELECT
-    * EXCEPT (line_items),
-    order_price - IFNULL(LAG(order_price) OVER (PARTITION BY order_id ORDER BY order_version),0) AS order_price_delta,
+    GENERATE_UUID() AS order_pkey,
+    * EXCEPT ( line_items ),
+    order_price - IFNULL( LAG( order_price ) OVER ( PARTITION BY order_id ORDER BY order_version ), 0 ) AS order_price_delta,
     line_items
   FROM
     rolled_up
