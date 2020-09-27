@@ -1,4 +1,4 @@
 SELECT
   *
 FROM
-  `tommo245.linking_products.line_items`
+  `tommo245.dbt_learning.line_items`

@@ -15,7 +15,6 @@ joined AS (
     l.line_item_product_id,
     l.line_item_type,
     l.line_item_price,
-    l.line_item_transaction_type,
     l.line_item_version,
     l.line_item_date
   FROM
@@ -55,7 +54,6 @@ rolled_up AS (
         line_item_type,
         line_item_price,
         line_item_price_delta,
-        line_item_transaction_type,
         line_item_version,
         line_item_date
       )

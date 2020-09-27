@@ -1,4 +1,4 @@
 SELECT
   *
 FROM
-  `tommo245.linking_products.orders`
+  `tommo245.dbt_learning.orders`
